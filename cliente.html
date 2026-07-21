@@ -2,11 +2,19 @@
 <div id="clientView" class="view">
   <header class="site-header">
     <div class="container header-inner">
-      <img src="logo.png" alt="Portones Omar - Logo" class="logo">
-      <div class="site-title">
-        <h1>Portones & Mercancía</h1>
-        <p class="tag">Instalación profesional y productos de calidad</p>
+      <div class="brand">
+        <img src="logo.png" alt="Portones Omar - Logo" class="logo">
+        <div class="site-title">
+          <h1>Portones & Mercancía</h1>
+          <p class="tag">Instalación profesional y productos de calidad</p>
+        </div>
       </div>
+      <nav class="main-nav">
+        <a href="#galeria">Galería</a>
+        <a href="#productos">Productos</a>
+        <a href="#contacto">Contacto</a>
+        <a href="https://wa.me/526671034487" target="_blank" rel="noopener" class="nav-cta">WhatsApp</a>
+      </nav>
     </div>
   </header>
 
@@ -22,14 +30,25 @@
     </div>
   </div>
 
-  <main class="container">
   <section class="hero">
-    <h2>Instalaciones recientes</h2>
-    <p>Galería de portones instalados y trabajos realizados.</p>
+    <div class="container hero-inner">
+      <span class="hero-badge">Más de 10 años de experiencia</span>
+      <h2>Portones resistentes, instalación profesional</h2>
+      <p>Diseñamos, fabricamos e instalamos portones residenciales e industriales, además de la mercancía y refacciones que necesitas.</p>
+      <div class="hero-actions">
+        <a href="#productos" class="btn btn-primary">Ver productos</a>
+        <a href="#contacto" class="btn btn-outline">Solicitar cotización</a>
+      </div>
+    </div>
   </section>
 
+  <main class="container">
+
   <section id="galeria" class="gallery">
-    <h3>Galería de instalaciones</h3>
+    <div class="section-heading">
+      <h3>Galería de instalaciones</h3>
+      <p>Trabajos recientes realizados para nuestros clientes.</p>
+    </div>
     <div class="grid">
       <figure>
         <img src="https://via.placeholder.com/600x400?text=Port%C3%B3n+1" alt="Portón instalado 1">
@@ -47,56 +66,85 @@
   </section>
 
   <section id="productos" class="products">
-    <h3>Productos / Mercancía</h3>
+    <div class="section-heading">
+      <h3>Productos / Mercancía</h3>
+      <p>Precios y descripciones actualizados por nuestro equipo.</p>
+    </div>
     <div class="cards">
       <article class="card">
         <img src="https://via.placeholder.com/400x300?text=Producto+1" alt="Producto 1">
-        <h4>Motor para portón</h4>
-        <p class="price">$250.00</p>
-        <p>Motor automático con control remoto y garantía.</p>
+        <div class="card-body">
+          <h4>Motor para portón</h4>
+          <p class="price">$250.00</p>
+          <p>Motor automático con control remoto y garantía.</p>
+        </div>
       </article>
 
       <article class="card">
         <img src="https://via.placeholder.com/400x300?text=Producto+2" alt="Producto 2">
-        <h4>Bisagras reforzadas</h4>
-        <p class="price">$45.00</p>
-        <p>Juego de bisagras para portones pesados.</p>
+        <div class="card-body">
+          <h4>Bisagras reforzadas</h4>
+          <p class="price">$45.00</p>
+          <p>Juego de bisagras para portones pesados.</p>
+        </div>
       </article>
 
       <article class="card">
         <img src="https://via.placeholder.com/400x300?text=Producto+3" alt="Producto 3">
-        <h4>Panel metálico</h4>
-        <p class="price">$120.00</p>
-        <p>Paneles cortados a medida para portones.</p>
+        <div class="card-body">
+          <h4>Panel metálico</h4>
+          <p class="price">$120.00</p>
+          <p>Paneles cortados a medida para portones.</p>
+        </div>
       </article>
     </div>
   </section>
 
   <section id="contacto" class="contact">
-    <h3>Contacto</h3>
-    <form id="contactForm">
-      <label for="name">Nombre</label>
-      <input id="name" name="name" required>
+    <div class="section-heading">
+      <h3>Contacto</h3>
+      <p>Cuéntanos qué necesitas y te responderemos a la brevedad.</p>
+    </div>
+    <div class="contact-grid">
+      <form id="contactForm" class="contact-form">
+        <label for="name">Nombre</label>
+        <input id="name" name="name" required>
 
-      <label for="email">Correo electrónico</label>
-      <input id="email" name="email" type="email" required>
+        <label for="email">Correo electrónico</label>
+        <input id="email" name="email" type="email" required>
 
-      <label for="phone">Teléfono</label>
-      <input id="phone" name="phone">
+        <label for="phone">Teléfono</label>
+        <input id="phone" name="phone">
 
-      <label for="message">Mensaje</label>
-      <textarea id="message" name="message" rows="4" required></textarea>
+        <label for="message">Mensaje</label>
+        <textarea id="message" name="message" rows="4" required></textarea>
 
-      <button type="submit">Enviar mensaje</button>
-    </form>
+        <button type="submit" class="btn btn-primary">Enviar mensaje</button>
+      </form>
+      <aside class="contact-info">
+        <h4>Información de contacto</h4>
+        <p><strong>WhatsApp:</strong> <a href="https://wa.me/526671034487" target="_blank" rel="noopener">+52 667 103 4487</a></p>
+        <p><strong>Email:</strong> <a href="mailto:contacto@portones.com">contacto@portones.com</a></p>
+        <p>Respondemos en horario de oficina, de lunes a sábado.</p>
+      </aside>
+    </div>
   </section>
   </main>
 
   <footer class="site-footer">
-    <div class="container">
-      <p>Web: <a href="https://www.PortonesOmar.com">www.PortonesOmar.com</a> · WhatsApp: <a href="https://wa.me/526671034487" target="_blank" rel="noopener">+52 667 103 4487</a> · Email: contacto@portones.com</p>
-      <p>&copy; <span id="year"></span> Portones & Mercancía</p>
-      <button class="admin-btn" id="adminBtn">Acceso Admin</button>
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <h4>Portones & Mercancía</h4>
+        <p>Instalación profesional de portones y venta de mercancía y refacciones.</p>
+      </div>
+      <div class="footer-contact">
+        <p>WhatsApp: <a href="https://wa.me/526671034487" target="_blank" rel="noopener">+52 667 103 4487</a></p>
+        <p>Email: <a href="mailto:contacto@portones.com">contacto@portones.com</a></p>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span id="year"></span> Portones & Mercancía. Todos los derechos reservados.</p>
+        <button class="admin-btn" id="adminBtn">Acceso Admin</button>
+      </div>
     </div>
   </footer>
 </div>
