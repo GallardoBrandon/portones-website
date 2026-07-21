@@ -1,6 +1,30 @@
 // Script para manejar API REST, admin panel e imágenes
 const API_URL = 'http://localhost:3000/api';
 
+// Cargar las vistas HTML dinámicamente
+async function loadViews() {
+  const app = document.getElementById('app');
+  
+  try {
+    // Cargar vista cliente
+    const clientRes = await fetch('cliente.html');
+    const clientHTML = await clientRes.text();
+    
+    // Cargar vista admin
+    const adminRes = await fetch('admin.html');
+    const adminHTML = await adminRes.text();
+    
+    // Insertar ambas vistas en el contenedor app
+    app.innerHTML = clientHTML + adminHTML;
+    
+    // Inicializar después de cargar las vistas
+    initializeApp();
+  } catch (error) {
+    console.error('Error cargando vistas:', error);
+    app.innerHTML = '<p style="color:red;padding:20px;">Error cargando aplicación</p>';
+  }
+}
+
 // Obtener token del localStorage
 function getAuthToken() {
   return localStorage.getItem('admin_token');
@@ -39,7 +63,8 @@ function fetchWithAuth(url, options = {}) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function(){
+// Función principal de inicialización
+function initializeApp() {
   const yearEl = document.getElementById('year');
   if(yearEl) yearEl.textContent = new Date().getFullYear();
 
@@ -415,4 +440,9 @@ document.addEventListener('DOMContentLoaded', function(){
   } else {
     showClientView();
   }
+}
+
+// Iniciar aplicación cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', function(){
+  loadViews();
 });
