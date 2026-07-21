@@ -156,7 +156,7 @@ app.post('/api/images', verifyToken, (req, res) => {
   });
 });
 
-app.get('/api/images', verifyToken, (req, res) => {
+app.get('/api/images', (req, res) => {
   db.getImages((err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });

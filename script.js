@@ -103,6 +103,45 @@ function initializeApp() {
     });
   }
 
+  // ===== GALERÍA PÚBLICA DE INSTALACIONES =====
+  function loadPublicGallery(){
+    const galleryGrid = document.getElementById('galleryGrid');
+    if(!galleryGrid) return;
+
+    fetch(`${API_URL}/images`)
+      .then(res => res.json())
+      .then(images => {
+        galleryGrid.innerHTML = '';
+
+        if(!images || images.length === 0){
+          galleryGrid.innerHTML = '<p>Aún no hay imágenes de instalaciones cargadas.</p>';
+          return;
+        }
+
+        images.forEach(image => {
+          const figure = document.createElement('figure');
+          figure.innerHTML = `
+            <img alt="${image.title}">
+            <figcaption>${image.title}</figcaption>
+          `;
+          galleryGrid.appendChild(figure);
+
+          fetch(`${API_URL}/images/${image.id}`)
+            .then(res => res.json())
+            .then(data => {
+              figure.querySelector('img').src = data.imageData;
+            })
+            .catch(err => console.error('Error cargando imagen:', err));
+        });
+      })
+      .catch(err => {
+        galleryGrid.innerHTML = '<p style="color:red;">Error al cargar la galería</p>';
+        console.error('Error:', err);
+      });
+  }
+
+  loadPublicGallery();
+
   // ===== VISTAS =====
   const clientView = document.getElementById('clientView');
   const adminView = document.getElementById('adminView');
@@ -352,6 +391,7 @@ function initializeApp() {
       .then(data => {
         if(data.success){
           loadUploadedImages();
+          loadPublicGallery();
           imagePreview.innerHTML = '';
           imageInput.value = '';
           imageTitle.value = '';
@@ -405,6 +445,7 @@ function initializeApp() {
               .then(data => {
                 if(data.success){
                   loadUploadedImages();
+                  loadPublicGallery();
                 }
               })
               .catch(err => console.error('Error:', err));
