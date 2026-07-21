@@ -5,9 +5,12 @@ body{font-family:Segoe UI, Roboto, Arial, sans-serif;margin:0;color:#222;line-he
 .container{max-width:1000px;margin:0 auto;padding:16px}
 .site-header{background:#f5f5f5;padding:20px 0;border-bottom:1px solid #e0e0e0}
 .site-header h1{margin:0;font-size:1.6rem}
-.header-inner{display:flex;align-items:center;gap:12px}
+.header-inner{display:flex;align-items:center;gap:12px;justify-content:space-between}
 .logo{max-height:64px;width:auto;border-radius:6px}
+.site-title{flex:1}
 .tag{color:var(--muted);margin-top:4px}
+.admin-btn{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:4px;cursor:pointer;font-size:0.9rem}
+.admin-btn:hover{opacity:0.9}
 .hero{padding:18px 0}
 .gallery .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
 .gallery img{width:100%;height:auto;border-radius:6px}
@@ -21,4 +24,52 @@ input,textarea{padding:8px;border:1px solid #ccc;border-radius:4px}
 button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:4px;cursor:pointer}
 button:hover{opacity:0.95}
 .site-footer{background:#fafafa;border-top:1px solid #eee;padding:14px;text-align:center;margin-top:18px}
-@media (max-width:480px){.container{padding:12px}.site-header h1{font-size:1.2rem}}
+/* Modal y Panel Admin */
+.modal{position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5)}
+.modal-content{background:#fff;margin:10% auto;padding:24px;border-radius:8px;width:90%;max-width:400px;box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.close{color:#999;float:right;font-size:24px;cursor:pointer}
+.close:hover{color:#000}
+.view{min-height:100vh;display:flex;flex-direction:column}
+.admin-header-main{background:linear-gradient(135deg, var(--accent) 0%, #1551cc 100%);color:#fff;padding:24px 0;border-bottom:3px solid #0d3fa3;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.admin-header-main h1{margin:0;font-size:1.8rem}
+.admin-header-main .container{display:flex;justify-content:space-between;align-items:center}
+.admin-main{flex:1}
+.admin-panel{display:none;background:#f9f9f9;border:1px solid #ddd;border-radius:8px;padding:20px;margin-top:20px}
+.admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:2px solid var(--accent);padding-bottom:10px}
+.logout-btn{background:#dc3545;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer}
+.logout-btn:hover{opacity:0.9}
+.admin-tabs{display:flex;gap:8px;margin-bottom:20px;border-bottom:1px solid #ddd}
+.tab-btn{background:none;border:none;padding:10px 14px;cursor:pointer;border-bottom:3px solid transparent;font-size:0.95rem}
+.tab-btn.active{border-bottom-color:var(--accent);font-weight:600}
+.tab-content{display:none}
+.tab-content.active{display:block}
+.prices-list{display:grid;gap:12px}
+.price-item{background:#fff;padding:12px;border:1px solid #ddd;border-radius:4px;display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}
+.price-item label{font-weight:600}
+.price-item input{padding:6px;border:1px solid #ccc;border-radius:3px}
+.price-item button{background:var(--accent);color:#fff;border:none;padding:6px 10px;border-radius:3px;cursor:pointer}
+.price-item button:hover{opacity:0.9}
+.upload-form{background:#fff;padding:16px;border-radius:4px;border:1px solid #ddd}
+.form-group{margin-bottom:12px;display:grid;gap:6px}
+.form-group label{font-weight:600;font-size:0.95rem}
+.form-group input{padding:8px;border:1px solid #ccc;border-radius:3px}
+.image-preview{margin:12px 0;text-align:center}
+.image-preview img{max-width:100%;max-height:200px;border-radius:4px}
+.uploaded-images{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}
+.uploaded-img-item{background:#fff;padding:8px;border-radius:4px;border:1px solid #ddd;text-align:center}
+.uploaded-img-item img{width:100%;height:120px;object-fit:cover;border-radius:3px;margin-bottom:6px}
+.uploaded-img-item button{background:#dc3545;color:#fff;width:100%;border:none;padding:4px;border-radius:3px;cursor:pointer;font-size:0.8rem}
+.uploaded-img-item button:hover{opacity:0.9}
+#uploadForm button{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:4px;cursor:pointer;margin-top:8px}
+#uploadForm button:hover{opacity:0.9}
+@media (max-width:480px){.container{padding:12px}.site-header h1{font-size:1.2rem}.header-inner{flex-direction:column;align-items:flex-start}.admin-btn{align-self:flex-end}.price-item{grid-template-columns:1fr}.modal-content{width:95%}}
+/* Estilos para edición de productos */
+.product-edit-item{background:#fff;border:1px solid #ddd;border-radius:6px;padding:16px;margin-bottom:16px}
+.product-edit-form{display:grid;gap:12px}
+.product-edit-form .form-group{display:grid;gap:6px}
+.product-edit-form .form-group label{font-weight:600;font-size:0.95rem;color:#333}
+.product-edit-form .form-group input{padding:10px;border:1px solid #ccc;border-radius:4px;font-size:0.95rem}
+.product-image-preview{display:flex;justify-content:center;align-items:center;min-height:100px;background:#f5f5f5;border-radius:4px;border:1px dashed #ddd}
+.product-image-preview img{max-width:100%;max-height:150px;border-radius:4px}
+.product-edit-form .update-product-btn{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:4px;cursor:pointer;font-weight:600;margin-top:8px}
+.product-edit-form .update-product-btn:hover{opacity:0.9}
