@@ -18,3 +18,9 @@ __pycache__/
 # Build
 dist/
 build/
+
+# Environment variables (contiene contraseñas/secrets)
+.env
+
+# Base de datos local (contiene datos de clientes)
+database.db
