@@ -99,7 +99,8 @@ app.get('/api/customers', verifyToken, (req, res) => {
 
 // ===== RUTAS DE PRODUCTOS =====
 app.get('/api/products', (req, res) => {
-  db.getProducts((err, rows) => {
+  const featuredOnly = req.query.featured === '1' || req.query.featured === 'true';
+  db.getProducts(featuredOnly, (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
     } else {
@@ -110,13 +111,13 @@ app.get('/api/products', (req, res) => {
 
 app.put('/api/products/:id', verifyToken, (req, res) => {
   const { id } = req.params;
-  const { name, price, description, imageData } = req.body;
+  const { name, price, description, imageData, featured } = req.body;
 
   if (!name || price === undefined) {
     return res.status(400).json({ error: 'Campos requeridos: name, price' });
   }
 
-  db.updateProduct(id, name, price, description || '', imageData || null, (err) => {
+  db.updateProduct(id, name, price, description || '', imageData || null, featured, (err) => {
     if (err) {
       res.status(500).json({ error: err.message });
     } else {

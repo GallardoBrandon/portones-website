@@ -63,6 +63,139 @@ function fetchWithAuth(url, options = {}) {
     });
 }
 
+// Mostrar una notificación (toast) en vez de alert()
+function showToast(message, type = 'success', duration = 5000) {
+  const container = document.getElementById('toastContainer');
+  if (!container) {
+    alert(message);
+    return;
+  }
+
+  const icons = { success: '✅', error: '⚠️', info: 'ℹ️' };
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${icons[type] || icons.info}</span>
+    <span class="toast-body"></span>
+    <button type="button" class="toast-close" aria-label="Cerrar">✕</button>
+  `;
+  toast.querySelector('.toast-body').textContent = message;
+
+  const remove = () => {
+    toast.classList.remove('toast-show');
+    toast.classList.add('toast-hide');
+    setTimeout(() => toast.remove(), 250);
+  };
+
+  toast.querySelector('.toast-close').addEventListener('click', remove);
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('toast-show'));
+
+  if (duration > 0) {
+    setTimeout(remove, duration);
+  }
+}
+
+// ===== GALERÍA PÚBLICA DE INSTALACIONES =====
+// container: elemento o id del contenedor. limit: número máximo de imágenes (opcional, si se omite muestra todas)
+function loadPublicGallery(container, limit) {
+  const galleryGrid = typeof container === 'string' ? document.getElementById(container) : container;
+  if (!galleryGrid) return;
+
+  galleryGrid.innerHTML = '<p>Cargando galería...</p>';
+
+  fetch(`${API_URL}/images`)
+    .then(res => res.json())
+    .then(images => {
+      galleryGrid.innerHTML = '';
+      let list = images || [];
+      if (limit) list = list.slice(0, limit);
+
+      if (list.length === 0) {
+        galleryGrid.innerHTML = '<p>Aún no hay imágenes de instalaciones cargadas.</p>';
+        return;
+      }
+
+      list.forEach(image => {
+        const figure = document.createElement('figure');
+        figure.innerHTML = `
+          <img alt="${image.title}">
+          <figcaption>${image.title}</figcaption>
+        `;
+        galleryGrid.appendChild(figure);
+
+        fetch(`${API_URL}/images/${image.id}`)
+          .then(res => res.json())
+          .then(data => {
+            figure.querySelector('img').src = data.imageData;
+          })
+          .catch(err => console.error('Error cargando imagen:', err));
+      });
+    })
+    .catch(err => {
+      galleryGrid.innerHTML = '<p style="color:red;">Error al cargar la galería</p>';
+      console.error('Error:', err);
+    });
+}
+
+// ===== PRODUCTOS PÚBLICOS =====
+function renderProductCards(container, products) {
+  const grid = typeof container === 'string' ? document.getElementById(container) : container;
+  if (!grid) return;
+
+  grid.innerHTML = '';
+
+  if (!products || products.length === 0) {
+    grid.innerHTML = '<p>No hay productos disponibles por el momento.</p>';
+    return;
+  }
+
+  products.forEach(product => {
+    const card = document.createElement('article');
+    card.className = 'card';
+    const imgSrc = product.image_data || `https://via.placeholder.com/400x300?text=${encodeURIComponent(product.name)}`;
+    card.innerHTML = `
+      <img src="${imgSrc}" alt="${product.name}">
+      <div class="card-body">
+        <h4>${product.name}</h4>
+        <p class="price">$${Number(product.price).toFixed(2)}</p>
+        <p>${product.description || ''}</p>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// Productos destacados (más vendidos) para la página de inicio
+function loadFeaturedProducts(container) {
+  const grid = typeof container === 'string' ? document.getElementById(container) : container;
+  if (!grid) return;
+  grid.innerHTML = '<p>Cargando productos...</p>';
+
+  fetch(`${API_URL}/products?featured=1`)
+    .then(res => res.json())
+    .then(products => renderProductCards(grid, (products || []).slice(0, 3)))
+    .catch(err => {
+      grid.innerHTML = '<p style="color:red;">Error al cargar productos</p>';
+      console.error('Error:', err);
+    });
+}
+
+// Catálogo completo de productos (página independiente)
+function loadAllProducts(container) {
+  const grid = typeof container === 'string' ? document.getElementById(container) : container;
+  if (!grid) return;
+  grid.innerHTML = '<p>Cargando productos...</p>';
+
+  fetch(`${API_URL}/products`)
+    .then(res => res.json())
+    .then(products => renderProductCards(grid, products))
+    .catch(err => {
+      grid.innerHTML = '<p style="color:red;">Error al cargar productos</p>';
+      console.error('Error:', err);
+    });
+}
+
 // Función principal de inicialización
 function initializeApp() {
   const yearEl = document.getElementById('year');
@@ -78,7 +211,7 @@ function initializeApp() {
       const phone = contactForm.phone ? contactForm.phone.value.trim() : '';
       const message = contactForm.message.value.trim();
       if(!name || !email || !message){
-        alert('Por favor complete los campos requeridos.');
+        showToast('Por favor completa los campos requeridos.', 'error');
         return;
       }
 
@@ -91,56 +224,33 @@ function initializeApp() {
       .then(res => res.json())
       .then(data => {
         if(data.success){
-          alert('Mensaje guardado. Se abrirá WhatsApp para confirmar.');
+          showToast('¡Mensaje enviado! Abriendo WhatsApp para confirmar tu solicitud...', 'success');
           const whatsappNumber = '526671034487';
-          const text = `Nuevo contacto desde web%0ANombre: ${name}%0AEmail: ${email}%0ATeléfono: ${phone}%0AMensaje: ${message}`;
+          const lines = [
+            '🔔 *Nuevo contacto desde la web*',
+            '',
+            `👤 Nombre: ${name}`,
+            `📧 Email: ${email}`
+          ];
+          if (phone) lines.push(`📱 Teléfono: ${phone}`);
+          lines.push('', `📝 Mensaje: ${message}`);
+          const text = lines.join('\n');
           const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`;
-          window.open(waUrl, '_blank');
+          setTimeout(() => window.open(waUrl, '_blank'), 600);
           contactForm.reset();
+        } else {
+          showToast('No se pudo enviar el mensaje. Intenta de nuevo.', 'error');
         }
       })
-      .catch(err => console.error('Error:', err));
+      .catch(err => {
+        console.error('Error:', err);
+        showToast('Ocurrió un error al enviar tu mensaje. Intenta de nuevo.', 'error');
+      });
     });
   }
 
-  // ===== GALERÍA PÚBLICA DE INSTALACIONES =====
-  function loadPublicGallery(){
-    const galleryGrid = document.getElementById('galleryGrid');
-    if(!galleryGrid) return;
-
-    fetch(`${API_URL}/images`)
-      .then(res => res.json())
-      .then(images => {
-        galleryGrid.innerHTML = '';
-
-        if(!images || images.length === 0){
-          galleryGrid.innerHTML = '<p>Aún no hay imágenes de instalaciones cargadas.</p>';
-          return;
-        }
-
-        images.forEach(image => {
-          const figure = document.createElement('figure');
-          figure.innerHTML = `
-            <img alt="${image.title}">
-            <figcaption>${image.title}</figcaption>
-          `;
-          galleryGrid.appendChild(figure);
-
-          fetch(`${API_URL}/images/${image.id}`)
-            .then(res => res.json())
-            .then(data => {
-              figure.querySelector('img').src = data.imageData;
-            })
-            .catch(err => console.error('Error cargando imagen:', err));
-        });
-      })
-      .catch(err => {
-        galleryGrid.innerHTML = '<p style="color:red;">Error al cargar la galería</p>';
-        console.error('Error:', err);
-      });
-  }
-
-  loadPublicGallery();
+  loadPublicGallery('galleryGrid', 3);
+  loadFeaturedProducts('featuredProductsGrid');
 
   // ===== VISTAS =====
   const clientView = document.getElementById('clientView');
@@ -205,11 +315,11 @@ function initializeApp() {
         loadUploadedImages();
         showAdminView();
       } else {
-        alert('Contraseña incorrecta');
+        showToast('Contraseña incorrecta', 'error');
       }
     })
     .catch(err => {
-      alert('Error al autenticar');
+      showToast('Error al autenticar', 'error');
       console.error('Error:', err);
     });
   });
@@ -273,6 +383,12 @@ function initializeApp() {
                 <input type="file" accept="image/*" class="product-image" data-id="${product.id}">
                 <div class="product-image-preview" data-id="${product.id}" style="margin-top:10px;"></div>
               </div>
+              <div class="form-group form-group-checkbox">
+                <label>
+                  <input type="checkbox" class="product-featured" data-id="${product.id}" ${product.featured ? 'checked' : ''}>
+                  Destacado (mostrar en la página de inicio)
+                </label>
+              </div>
               <button type="button" class="update-product-btn" data-id="${product.id}">Guardar cambios</button>
             </div>
           `;
@@ -309,9 +425,10 @@ function initializeApp() {
             const price = parseFloat(form.querySelector('.product-price').value);
             const description = form.querySelector('.product-description').value.trim();
             const imageInput = form.querySelector('.product-image');
+            const featured = form.querySelector('.product-featured').checked;
 
             if(!name || isNaN(price)){
-              alert('Por favor completa los campos requeridos');
+              showToast('Por favor completa los campos requeridos', 'error');
               return;
             }
 
@@ -319,12 +436,12 @@ function initializeApp() {
             if(imageInput.files[0]){
               const reader = new FileReader();
               reader.onload = function(e){
-                updateProductData(productId, name, price, description, e.target.result);
+                updateProductData(productId, name, price, description, e.target.result, featured);
               };
               reader.readAsDataURL(imageInput.files[0]);
             } else {
               // Actualizar sin cambiar imagen
-              updateProductData(productId, name, price, description, null);
+              updateProductData(productId, name, price, description, null, featured);
             }
           });
         });
@@ -335,8 +452,8 @@ function initializeApp() {
       });
   }
 
-  function updateProductData(id, name, price, description, imageData){
-    const body = { name, price, description };
+  function updateProductData(id, name, price, description, imageData, featured){
+    const body = { name, price, description, featured };
     if(imageData) body.imageData = imageData;
 
     fetchWithAuth(`${API_URL}/products/${id}`, {
@@ -346,7 +463,7 @@ function initializeApp() {
     .then(res => res.json())
     .then(data => {
       if(data.success){
-        alert('Producto actualizado correctamente');
+        showToast('Producto actualizado correctamente', 'success');
         loadPricesUI();
       }
     })
@@ -375,7 +492,7 @@ function initializeApp() {
     const file = imageInput.files[0];
     const title = imageTitle.value.trim();
     if(!file || !title){
-      alert('Completa todos los campos');
+      showToast('Completa todos los campos', 'error');
       return;
     }
 
@@ -391,11 +508,11 @@ function initializeApp() {
       .then(data => {
         if(data.success){
           loadUploadedImages();
-          loadPublicGallery();
+          loadPublicGallery('galleryGrid', 3);
           imagePreview.innerHTML = '';
           imageInput.value = '';
           imageTitle.value = '';
-          alert('Imagen cargada correctamente');
+          showToast('Imagen cargada correctamente', 'success');
         }
       })
       .catch(err => console.error('Error:', err));
@@ -445,7 +562,7 @@ function initializeApp() {
               .then(data => {
                 if(data.success){
                   loadUploadedImages();
-                  loadPublicGallery();
+                  loadPublicGallery('galleryGrid', 3);
                 }
               })
               .catch(err => console.error('Error:', err));
@@ -483,7 +600,23 @@ function initializeApp() {
   }
 }
 
+// Inicialización para páginas independientes (productos.html, galeria.html)
+function initStaticPage() {
+  const yearEl = document.getElementById('year');
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+  const allProductsGrid = document.getElementById('allProductsGrid');
+  if (allProductsGrid) loadAllProducts(allProductsGrid);
+
+  const fullGalleryGrid = document.getElementById('fullGalleryGrid');
+  if (fullGalleryGrid) loadPublicGallery(fullGalleryGrid);
+}
+
 // Iniciar aplicación cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function(){
-  loadViews();
+  if (document.getElementById('app')) {
+    loadViews();
+  } else {
+    initStaticPage();
+  }
 });

@@ -47,23 +47,35 @@ function initDatabase() {
     )
   `);
 
-  // Insertar productos por defecto si no existen
-  db.all('SELECT COUNT(*) as count FROM products', (err, rows) => {
-    if (rows[0].count === 0) {
-      const defaultProducts = [
-        { name: 'Motor para portón', price: 250.00, description: 'Motor automático con control remoto y garantía.' },
-        { name: 'Bisagras reforzadas', price: 45.00, description: 'Juego de bisagras para portones pesados.' },
-        { name: 'Panel metálico', price: 120.00, description: 'Paneles cortados a medida para portones.' }
-      ];
+  // Migración: agregar columna 'image_data' si falta (bases de datos antiguas)
+  db.run('ALTER TABLE products ADD COLUMN image_data LONGTEXT', () => {});
 
-      defaultProducts.forEach(product => {
-        db.run(
-          'INSERT INTO products (name, price, description) VALUES (?, ?, ?)',
-          [product.name, product.price, product.description]
-        );
-      });
-      console.log('Productos por defecto insertados');
+  // Migración: agregar columna 'featured' (destacado / se muestra en inicio) si no existe
+  db.run('ALTER TABLE products ADD COLUMN featured INTEGER DEFAULT 1', (err) => {
+    if (!err) {
+      // Columna recién creada: marcar productos existentes como destacados por defecto
+      db.run('UPDATE products SET featured = 1');
+      console.log('Migración: columna featured agregada a products');
     }
+
+    // Insertar productos por defecto si no existen
+    db.all('SELECT COUNT(*) as count FROM products', (err2, rows) => {
+      if (!err2 && rows[0].count === 0) {
+        const defaultProducts = [
+          { name: 'Motor para portón', price: 250.00, description: 'Motor automático con control remoto y garantía.' },
+          { name: 'Bisagras reforzadas', price: 45.00, description: 'Juego de bisagras para portones pesados.' },
+          { name: 'Panel metálico', price: 120.00, description: 'Paneles cortados a medida para portones.' }
+        ];
+
+        defaultProducts.forEach(product => {
+          db.run(
+            'INSERT INTO products (name, price, description, featured) VALUES (?, ?, ?, 1)',
+            [product.name, product.price, product.description]
+          );
+        });
+        console.log('Productos por defecto insertados');
+      }
+    });
   });
 }
 
@@ -87,14 +99,21 @@ function getCustomers(callback) {
 }
 
 // Funciones para productos
-function getProducts(callback) {
-  db.all('SELECT * FROM products ORDER BY id', callback);
+function getProducts(featuredOnly, callback) {
+  if (typeof featuredOnly === 'function') {
+    callback = featuredOnly;
+    featuredOnly = false;
+  }
+  const sql = featuredOnly
+    ? 'SELECT * FROM products WHERE featured = 1 ORDER BY id'
+    : 'SELECT * FROM products ORDER BY id';
+  db.all(sql, callback);
 }
 
-function updateProduct(id, name, price, description, imageData, callback) {
+function updateProduct(id, name, price, description, imageData, featured, callback) {
   db.run(
-    'UPDATE products SET name = ?, price = ?, description = ?, image_data = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-    [name, price, description, imageData || null, id],
+    'UPDATE products SET name = ?, price = ?, description = ?, image_data = ?, featured = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [name, price, description, imageData || null, featured ? 1 : 0, id],
     callback
   );
 }
