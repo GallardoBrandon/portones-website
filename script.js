@@ -1,5 +1,5 @@
 // Script para manejar API REST, admin panel e imágenes
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 // Cargar las vistas HTML dinámicamente
 async function loadViews() {
