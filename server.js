@@ -6,8 +6,8 @@ const crypto = require('crypto');
 const db = require('./database');
 
 const app = express();
-const PORT = 3000;
-const ADMIN_PASSWORD = 'admin123'; // Cambiar esta contraseña
+const PORT = process.env.PORT || 3000;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
 // Almacén de tokens activos (id -> { token, expiresAt })
 const activeTokens = new Map();
