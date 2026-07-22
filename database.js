@@ -8,6 +8,10 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
     console.error('Error al abrir la base de datos:', err.message);
   } else {
     console.log('Conectado a SQLite en:', DB_PATH);
+    // Forzar ejecución en orden estricto (FIFO) para toda la vida de la conexión.
+    // Esto evita condiciones de carrera donde una consulta (p.ej. de una request HTTP
+    // entrante) se ejecuta antes de que terminen las migraciones de esquema (ALTER TABLE).
+    db.serialize();
     initDatabase();
   }
 });
