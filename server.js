@@ -126,6 +126,22 @@ app.put('/api/products/:id', verifyToken, (req, res) => {
   });
 });
 
+app.post('/api/products', verifyToken, (req, res) => {
+  const { name, price, description, imageData, featured } = req.body;
+
+  if (!name || price === undefined) {
+    return res.status(400).json({ error: 'Campos requeridos: name, price' });
+  }
+
+  db.addProduct(name, price, description || '', imageData || null, featured, (err, result) => {
+    if (err) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(201).json({ success: true, id: result.id });
+    }
+  });
+});
+
 app.get('/api/products/:id', (req, res) => {
   const { id } = req.params;
 

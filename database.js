@@ -118,6 +118,20 @@ function updateProduct(id, name, price, description, imageData, featured, callba
   );
 }
 
+function addProduct(name, price, description, imageData, featured, callback) {
+  db.run(
+    'INSERT INTO products (name, price, description, image_data, featured) VALUES (?, ?, ?, ?, ?)',
+    [name, price, description || '', imageData || null, featured ? 1 : 0],
+    function(err) {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, { id: this.lastID });
+      }
+    }
+  );
+}
+
 function getProductImage(id, callback) {
   db.get('SELECT image_data FROM products WHERE id = ?', [id], callback);
 }
@@ -155,6 +169,7 @@ module.exports = {
   getCustomers,
   getProducts,
   updateProduct,
+  addProduct,
   getProductImage,
   addImage,
   getImages,

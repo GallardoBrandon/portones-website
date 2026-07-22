@@ -452,6 +452,108 @@ function initializeApp() {
       });
   }
 
+  // Botón para agregar un producto nuevo
+  const addProductBtn = document.getElementById('addProductBtn');
+  if(addProductBtn){
+    addProductBtn.addEventListener('click', function(){
+      if(document.getElementById('newProductForm')) return; // ya está abierto
+
+      const pricesList = document.getElementById('pricesList');
+      const newItem = document.createElement('div');
+      newItem.className = 'product-edit-item';
+      newItem.id = 'newProductForm';
+      newItem.innerHTML = `
+        <div class="product-edit-form">
+          <div class="form-group">
+            <label>Nombre del producto:</label>
+            <input type="text" class="product-name">
+          </div>
+          <div class="form-group">
+            <label>Precio:</label>
+            <input type="number" step="0.01" class="product-price">
+          </div>
+          <div class="form-group">
+            <label>Descripción:</label>
+            <input type="text" class="product-description">
+          </div>
+          <div class="form-group">
+            <label>Imagen:</label>
+            <input type="file" accept="image/*" class="product-image">
+            <div class="product-image-preview" style="margin-top:10px;"></div>
+          </div>
+          <div class="form-group form-group-checkbox">
+            <label>
+              <input type="checkbox" class="product-featured" checked>
+              Destacado (mostrar en la página de inicio)
+            </label>
+          </div>
+          <div class="new-product-actions">
+            <button type="button" class="create-product-btn">Crear producto</button>
+            <button type="button" class="cancel-product-btn">Cancelar</button>
+          </div>
+        </div>
+      `;
+      pricesList.prepend(newItem);
+
+      const imageInput = newItem.querySelector('.product-image');
+      const preview = newItem.querySelector('.product-image-preview');
+      imageInput.addEventListener('change', function(){
+        const file = this.files[0];
+        if(file){
+          const reader = new FileReader();
+          reader.onload = function(e){
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="width:100%;max-width:200px;border-radius:5px;">`;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      newItem.querySelector('.cancel-product-btn').addEventListener('click', function(){
+        newItem.remove();
+      });
+
+      newItem.querySelector('.create-product-btn').addEventListener('click', function(){
+        const name = newItem.querySelector('.product-name').value.trim();
+        const price = parseFloat(newItem.querySelector('.product-price').value);
+        const description = newItem.querySelector('.product-description').value.trim();
+        const featured = newItem.querySelector('.product-featured').checked;
+
+        if(!name || isNaN(price)){
+          showToast('Por favor completa nombre y precio', 'error');
+          return;
+        }
+
+        const createProduct = (imageData) => {
+          fetchWithAuth(`${API_URL}/products`, {
+            method: 'POST',
+            body: JSON.stringify({ name, price, description, imageData, featured })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if(data.success){
+              showToast('Producto creado correctamente', 'success');
+              loadPricesUI();
+            } else {
+              showToast('No se pudo crear el producto', 'error');
+            }
+          })
+          .catch(err => {
+            console.error('Error:', err);
+            showToast('Ocurrió un error al crear el producto', 'error');
+          });
+        };
+
+        if(imageInput.files[0]){
+          const reader = new FileReader();
+          reader.onload = function(e){ createProduct(e.target.result); };
+          reader.readAsDataURL(imageInput.files[0]);
+        } else {
+          createProduct(null);
+        }
+      });
+    });
+  }
+
   function updateProductData(id, name, price, description, imageData, featured){
     const body = { name, price, description, featured };
     if(imageData) body.imageData = imageData;

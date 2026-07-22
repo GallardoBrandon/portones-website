@@ -9,18 +9,21 @@
 
   <main class="container admin-main">
     <div class="admin-tabs">
-      <button class="tab-btn active" data-tab="prices">Editar Productos</button>
+      <button class="tab-btn active" data-tab="prices">Productos</button>
       <button class="tab-btn" data-tab="images">Subir Imágenes</button>
     </div>
 
     <!-- Tab Precios -->
     <div id="pricesTab" class="tab-content active">
-      <h3>Editar Productos</h3>
+      <div class="admin-section-header">
+        <h3>Productos</h3>
+        <button type="button" id="addProductBtn" class="btn-add-product">+ Agregar producto</button>
+      </div>
       <div id="pricesList" class="prices-list"></div>
     </div>
 
     <!-- Tab Imágenes -->
-    <div id="imagesTab" class="tab-content" style="display: none;">
+    <div id="imagesTab" class="tab-content">
       <h3>Subir Imágenes</h3>
       <form id="uploadForm" class="upload-form">
         <div class="form-group">
