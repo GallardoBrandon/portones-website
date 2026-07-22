@@ -204,8 +204,16 @@ button{font-family:inherit}
 #uploadForm button:hover{background:var(--accent-dark)}
 
 /* Estilos para edición de productos */
-.product-edit-item{background:#fff;border:1px solid #ddd;border-radius:8px;padding:16px;margin-bottom:16px}
-.product-edit-form{display:grid;gap:12px}
+.product-edit-item{background:#fff;border:1px solid #ddd;border-radius:8px;padding:0;margin-bottom:16px;overflow:hidden}
+.product-edit-item.hidden{display:none}
+.product-summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;cursor:pointer;user-select:none}
+.product-summary:hover{background:#f9f9f9}
+.product-summary-name{font-weight:700;color:var(--navy);flex:1}
+.product-summary-price{color:var(--muted);font-weight:600}
+.toggle-icon{color:var(--accent);font-weight:700;transition:transform .2s ease}
+.product-edit-item.expanded .toggle-icon{transform:rotate(90deg)}
+.product-edit-form{display:none;gap:12px;padding:0 16px 16px}
+.product-edit-item.expanded .product-edit-form{display:grid}
 .product-edit-form .form-group{display:grid;gap:6px}
 .product-edit-form .form-group label{font-weight:600;font-size:0.95rem;color:#333}
 .product-edit-form .form-group input{padding:10px;border:1px solid #ccc;border-radius:6px;font-size:0.95rem}
@@ -215,6 +223,9 @@ button{font-family:inherit}
 .product-edit-form .update-product-btn:hover{background:var(--accent-dark)}
 .form-group-checkbox label{display:flex;align-items:center;gap:8px;font-weight:600;font-size:0.9rem;color:#333;cursor:pointer}
 .form-group-checkbox input[type="checkbox"]{width:auto;accent-color:var(--accent)}
+.admin-search-row{margin-bottom:16px}
+.product-search-input{width:100%;padding:10px 14px;border:1px solid #ccc;border-radius:6px;font-size:0.95rem}
+.product-search-input:focus{outline:none;border-color:var(--accent)}
 
 /* ===== Responsive ===== */
 @media (max-width:768px){

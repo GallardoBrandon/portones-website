@@ -364,7 +364,13 @@ function initializeApp() {
         products.forEach((product) => {
           const priceItem = document.createElement('div');
           priceItem.className = 'product-edit-item';
+          priceItem.dataset.name = product.name.toLowerCase();
           priceItem.innerHTML = `
+            <div class="product-summary">
+              <span class="product-summary-name">${product.name}</span>
+              <span class="product-summary-price">$${product.price}</span>
+              <span class="toggle-icon">▸</span>
+            </div>
             <div class="product-edit-form">
               <div class="form-group">
                 <label>Nombre del producto:</label>
@@ -399,6 +405,11 @@ function initializeApp() {
             const preview = priceItem.querySelector('.product-image-preview');
             preview.innerHTML = `<img src="${product.image_data}" alt="${product.name}" style="width:100%;max-width:200px;border-radius:5px;">`;
           }
+
+          // Alternar expandir/colapsar al hacer clic en el resumen
+          priceItem.querySelector('.product-summary').addEventListener('click', function(){
+            priceItem.classList.toggle('expanded');
+          });
         });
 
         // Listeners para cambio de imagen
@@ -445,11 +456,33 @@ function initializeApp() {
             }
           });
         });
+
+        // Aplicar filtro de búsqueda actual (si el usuario ya había escrito algo)
+        const searchInput = document.getElementById('productSearchInput');
+        if(searchInput && searchInput.value){
+          filterProductsList(searchInput.value);
+        }
       })
       .catch(err => {
         pricesList.innerHTML = '<p style="color:red;">Error al cargar productos</p>';
         console.error('Error:', err);
       });
+  }
+
+  // Filtrar la lista de productos por nombre
+  function filterProductsList(query){
+    const term = query.trim().toLowerCase();
+    document.querySelectorAll('#pricesList .product-edit-item').forEach(item => {
+      const matches = !term || (item.dataset.name || '').includes(term);
+      item.classList.toggle('hidden', !matches);
+    });
+  }
+
+  const productSearchInput = document.getElementById('productSearchInput');
+  if(productSearchInput){
+    productSearchInput.addEventListener('input', function(){
+      filterProductsList(this.value);
+    });
   }
 
   // Botón para agregar un producto nuevo
@@ -460,7 +493,7 @@ function initializeApp() {
 
       const pricesList = document.getElementById('pricesList');
       const newItem = document.createElement('div');
-      newItem.className = 'product-edit-item';
+      newItem.className = 'product-edit-item expanded';
       newItem.id = 'newProductForm';
       newItem.innerHTML = `
         <div class="product-edit-form">
